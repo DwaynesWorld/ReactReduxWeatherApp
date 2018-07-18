@@ -1,12 +1,23 @@
-import React, { Component } from "react";
-import { Sparklines, SparklinesLine } from "react-sparklines";
+import _ from "lodash";
+import React from "react";
+import {
+  Sparklines,
+  SparklinesLine,
+  SparklinesReferenceLine
+} from "react-sparklines";
 
-export default props => {
+function average(data) {
+  return _.round(_.sum(data) / data.length);
+}
+
+export default ({ data, color }) => {
   return (
-    <React.Fragment>
-      <Sparklines data={props.data} height={120} width={180}>
-        <SparklinesLine color={props.color} />
+    <div>
+      <Sparklines data={data} height={120} width={180}>
+        <SparklinesLine color={color} />
+        <SparklinesReferenceLine type="avg" />
       </Sparklines>
-    </React.Fragment>
+      <div>{average(data)}</div>
+    </div>
   );
 };

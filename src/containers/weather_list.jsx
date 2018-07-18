@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import WeatherChart from "../components/chart";
+import Map from "../components/map";
 
 class WeatherList extends Component {
   render() {
@@ -9,9 +10,9 @@ class WeatherList extends Component {
         <thead>
           <tr>
             <th>City</th>
-            <th>Temperature</th>
-            <th>Pressure</th>
-            <th>Humidity</th>
+            <th>Temperature (℉)</th>
+            <th>Pressure (hPa)</th>
+            <th>Humidity (%)</th>
           </tr>
         </thead>
         <tbody>{this.renderWeather()}</tbody>
@@ -22,13 +23,18 @@ class WeatherList extends Component {
   renderWeather = () => {
     return this.props.weather.map(data => {
       const name = data.city.name;
-      const temps = data.list.map(weather => weather.main.temp);
+      const { lon, lat } = data.city.coord;
+      const temps = _.map(data.list.map(weather => weather.main.temp), temp => {
+        return 1.8 * (temp - 273) + 32;
+      });
       const humidities = data.list.map(weather => weather.main.humidity);
       const pressures = data.list.map(weather => weather.main.pressure);
 
       return (
         <tr key={name}>
-          <td>{name}</td>
+          <td>
+            <Map lat={lat} lon={lon} />
+          </td>
           <td>
             <WeatherChart data={temps} color="green" />
           </td>
@@ -48,7 +54,4 @@ function mapStateToProps({ weather }) {
   return { weather };
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(WeatherList);
+export default connect(mapStateToProps)(WeatherList);
